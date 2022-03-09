@@ -1,7 +1,7 @@
 WITH
   AVERIAS AS(
   SELECT
-  FECHA_DE_INICIO,
+   DATE_ADD(FECHA_DE_INICIO, INTERVAL 6 HOUR) AS FECHAINICIO,
   FECHA_DE_FINAL,
     NODO,
     EXTRACT( MONTH
@@ -10,7 +10,8 @@ WITH
       EXTRACT( HOUR FROM FECHA_DE_INICIO) AS HORA,
     Ticket_ID,
     Clientes_Afectados,
-    DIFERENCIA_FECHAS_HORAS
+    DIFERENCIA_FECHAS_HORAS,
+    SISTEMA
   FROM
     `gcp-bia-tmps-vtr-dev-01.gcp_temp_cr_dev_01.2022-02-07_CR_AVERIAS_NODOS_2020-12_A_2021-12_D`
   WHERE
@@ -34,7 +35,8 @@ WITH
     5,
     6,
     7,
-    8 ),
+    8,
+    9 ),
   GEOUSUARIOS AS (
   SELECT
     ID_NODO,
@@ -57,12 +59,13 @@ WITH
   USUARIOSAVERIAS AS(
   SELECT
     a.NODO,
-    a.FECHA_DE_INICIO,
+    a.FECHAINICIO,
     a.FECHA_DE_FINAL,
     a.MES,
     a.Ticket_ID,
     A.Clientes_Afectados,
     a.DIFERENCIA_FECHAS_HORAS,
+    a.SISTEMA,
     g.ID_NODO,
     g.PROVINCIA,
     g.Cant__n,
@@ -90,17 +93,19 @@ WITH
     11,
     12,
     13,
-    14),
+    14,
+    15),
   TABLAFINAL AS(
   SELECT
     DISTINCT MES,
     Ticket_iD,
-    FECHA_DE_INICIO,
+    FECHAINICIO,
     FECHA_DE_FINAL,
     NODO,
     PROVINCIA,
     Cant__n,
     DISTRITO,
+    SISTEMA,
     CANTIDAD_DE_USUARIOS,
     Clientes_Afectados,
     DIFERENCIA_FECHAS_HORAS,
@@ -121,21 +126,24 @@ WITH
     10,
     11,
     12,
-    13)
+    13,
+    14)
 SELECT
   Ticket_ID,
   MES,
-  FECHA_DE_INICIO,
+  FECHAINICIO,
   FECHA_DE_FINAL,
   Latitud,
   longitud,
+  SISTEMA,
   NODO,
   PROVINCIA,
   Cant__n,
   DISTRITO,
   CANTIDAD_DE_USUARIOS,
   Clientes_Afectados,
-  DIFERENCIA_FECHAS_HORAS
+  DATE_DIFF( FECHA_DE_FINAL,FECHAINICIO, HOUR) AS DIFERENCIA_HORAS,
+  DATE_DIFF( FECHA_DE_FINAL,FECHAINICIO, MINUTE) AS DIFERENCIA_MINUTOS
 FROM
   TABLAFINAL
 ORDER BY
